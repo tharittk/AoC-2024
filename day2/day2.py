@@ -1,3 +1,4 @@
+# By Tharit T. | Dec 5, 2024
 
 def read_input():
     reports = []
@@ -27,9 +28,8 @@ def check_report_ok(report):
             continue
         else:
             return False
+
     return True
-
-
 
 def solve_part1(reports):
     safe_report_count = 0
@@ -80,5 +80,4 @@ if __name__ == "__main__":
 
     solve_part1(reports)
 
-    #solve_part2([[1,3,2,4,5]])
     solve_part2(reports)

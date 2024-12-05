@@ -1,3 +1,4 @@
+# By Tharit T. Dec 5, 2024
 
 def read_input():
     note1 = []
@@ -12,6 +13,7 @@ def read_input():
 
             note1.append(a)
             note2.append(b)
+
     return note1, note2
 
 def solve_part1(note1, note2):
