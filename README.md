@@ -11,5 +11,9 @@ Part 2: keeps track every obstacle on which side it has been hit. If the same si
 Day 7: Operator Serach
 Part 1: Recursion for O(2^n) with optimization via early termination, which was possible because + and * only increase the value
 Part 2: From O(2^n) to O(3^n). The same optimization is applied as concatenation has the same nature as + and *
+Day 8: Antenna Harmonic
+Part 1: Use the vector notation to find the antinode location. Leaving the out-of-grid check until we are going to add the location to final output. The final output handles duplication naturally through built-in set
+Part 2: Code changes by having the out-of-grid check embedded inside the antinode finding function. The while loop keeps adding the antinode as long as it is still inside grid.
+
 
 
