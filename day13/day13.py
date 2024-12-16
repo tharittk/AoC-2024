@@ -21,8 +21,6 @@ def read_input():
         xe = re.findall(x_equals_pattern, cfg)
         ye = re.findall(y_equals_pattern, cfg)
 
-        print(f"match, xp {xp}, yp {yp}, xe {xe}, ye {ye}")
-
         config['Ax'] = int(xp[0])
         config['Ay'] = int(yp[0])
         config['Bx'] = int(xp[1])
@@ -32,31 +30,87 @@ def read_input():
         pid += 1
     return problems
 
-def dp_one_config(config):
+def recurse_one_config(config):
 
     x_final = config['Px']
     y_final = config['Py']
+    print(f"recurse with {x_final} {y_final}")
+    Ax = config['Ax']
+    Ay = config['Ay']
+    Bx = config['Bx']
+    By = config['By']
 
-    dp = [[float('inf') for w in range(x_final+1)] for h in range(y_final+1)]
+    def aux(x_final, y_final, memo):
+        if (x_final, y_final) in memo:
+            return memo[(x_final, y_final)]
+        if x_final==0 and y_final==0:
+            return 0
+        # infeasible path
+        if x_final < 0 or y_final < 0:
+            return float('inf')
 
-    # zero cost to start
-    dp[0][0] = 0
+        cost = min(3 +  aux(x_final-Ax, y_final-Ay, memo), 1 + aux(x_final-Bx, y_final-By, memo))
+        memo[(x_final, y_final)] = cost
+        return cost
+    memo = {}
+    cost = aux(x_final, y_final, memo)
+    return cost
 
-    for dx, dy, cost in [ [config['Ax'], config['Ay'], 3], [config['Bx'], config['By'], 1] ]:
-        for i in range(1, x_final+1):
-            for j in range(1, y_final+1):
-                if i - dx >= 0 and j -dy >= 0:
-                    dp[j][i] = min(dp[j][i], dp[j-dy][i-dx] + cost)
-    return dp[-1][-1]
+def solve_part1(problems):
+    total = 0
+    for key in problems.keys():
+        config = problems[key]
+        cost = recurse_one_config(config)
+        if cost != float('inf'):
+            total += cost
+        #print(f"Min cost is: {cost}")
+    print(f"Part 1 total cost :{total}")
 
+def solve_trillion(config):
+    # solve original problem first
+    trillion = 1e12
+    x0_final = config['Px']
+    y0_final = config['Py']
+
+    # to reach the nearest using atomic optimal solution
+    x_final = x0_final + trillion
+    y_final = y0_final + trillion
+    
+    #print(x_final, y_final)
+    
+    #factor = min(x_final // x0_final, y_final // y0_final)
+    #print(factor)
+    #x_left = x_final - factor * x0_final
+    #y_left = y_final - factor * y0_final
+    
+    cost_orig = recurse_one_config(config)
+    
+    # left-over is reachable ?
+    config['Px'] = x_left
+    config['Py'] = y_left
+
+    cost_left = recurse_one_config(config)
+
+    if cost_left != float('inf'):
+        cost_total = cost_orig * factor + cost_left
+    else:
+        return float('inf')
+
+    return cost_total
+
+def solve_part2(problems):
+    total = 0
+    for key in problems.keys():
+        config = problems[key]
+        cost = solve_trillion(config)
+        if cost != float('inf'):
+            total += cost
+        print(f"Min cost is: {cost}")
+    #print(f"Part 2 total cost :{total}")
 
 
 if __name__ == "__main__":
     problems = read_input()
-    #print(problems)
+    #solve_part1(problems)
+    solve_part2(problems)
 
-    for key in problems.keys():
-        config = problems[key]
-        cost = dp_one_config(config)
-        print(f"Min cost is: {cost}")
-        break
