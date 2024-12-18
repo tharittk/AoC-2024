@@ -8,7 +8,7 @@ def read_input():
     y_equals_pattern = r"Y=(\d+)"    
 
     problems = {}
-    with open("./sinput.txt") as f:
+    with open("./input.txt") as f:
         lines = f.readlines()
     pid = 0
     for i in range(0, len(lines), 4):
@@ -68,26 +68,22 @@ def solve_part1(problems):
 
 def solve_trillion(config):
     # solve original problem first
-    trillion = 1e12
-    target_x = config['Px']
-    target_y = config['Py']
+    trillion = 10000000000000#1e12 NO It's e13 !
+    Px = config['Px'] + trillion
+    Py = config['Py'] + trillion
+    Ax = config['Ax']
+    Ay = config['Ay']
+    Bx = config['Bx']
+    By = config['By']
 
-    c1 = target_x - target_y
-    c2 = config['Ax'] - config['Ay']
-    c3 = config['Bx'] - config['By']
+    nA = (Px * By - Py * Bx) / (Ax * By - Ay * Bx)
+    nB = (Px - nA*Ax)/Bx
 
-    print(f"c1: {c1}, c2: {c2}, c3: {c3}")
-
-
-    # big_x = Bx * c1 / c3 + nA * (Ax- Bx*C2/C3)
-    nA = ((trillion + target_x) - (config['Bx'] * c1 / c3)) / (config['Ax'] - (c2*config['Bx']/c3))
-    nB = (c1 - nA * c2) / c3
-
-    print(f"Result is nA = {nA} nb = {nB}")
+    #print(f"Result is nA = {nA} nb = {nB}")
 
     # infeasibile
     if not nA.is_integer():
-        print("Infeasible")
+        #print("Infeasible")
         return float('inf')
 
     else:
@@ -98,10 +94,10 @@ def solve_part2(problems):
     for key in problems.keys():
         config = problems[key]
         cost = solve_trillion(config)
-        print(f"Cost is {cost}")
+        #print(f"Cost is {cost}")
         if cost != float('inf'):
             total += cost
-
+    print(f"Part 2: Total cost {total}" )
 
 if __name__ == "__main__":
     problems = read_input()
