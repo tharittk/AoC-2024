@@ -69,44 +69,38 @@ def solve_part1(problems):
 def solve_trillion(config):
     # solve original problem first
     trillion = 1e12
-    x0_final = config['Px']
-    y0_final = config['Py']
+    target_x = config['Px']
+    target_y = config['Py']
 
-    # to reach the nearest using atomic optimal solution
-    x_final = x0_final + trillion
-    y_final = y0_final + trillion
-    
-    #print(x_final, y_final)
-    
-    #factor = min(x_final // x0_final, y_final // y0_final)
-    #print(factor)
-    #x_left = x_final - factor * x0_final
-    #y_left = y_final - factor * y0_final
-    
-    cost_orig = recurse_one_config(config)
-    
-    # left-over is reachable ?
-    config['Px'] = x_left
-    config['Py'] = y_left
+    c1 = target_x - target_y
+    c2 = config['Ax'] - config['Ay']
+    c3 = config['Bx'] - config['By']
 
-    cost_left = recurse_one_config(config)
+    print(f"c1: {c1}, c2: {c2}, c3: {c3}")
 
-    if cost_left != float('inf'):
-        cost_total = cost_orig * factor + cost_left
-    else:
+
+    # big_x = Bx * c1 / c3 + nA * (Ax- Bx*C2/C3)
+    nA = ((trillion + target_x) - (config['Bx'] * c1 / c3)) / (config['Ax'] - (c2*config['Bx']/c3))
+    nB = (c1 - nA * c2) / c3
+
+    print(f"Result is nA = {nA} nb = {nB}")
+
+    # infeasibile
+    if not nA.is_integer():
+        print("Infeasible")
         return float('inf')
 
-    return cost_total
+    else:
+        return 3 * nA + nB
 
 def solve_part2(problems):
     total = 0
     for key in problems.keys():
         config = problems[key]
         cost = solve_trillion(config)
+        print(f"Cost is {cost}")
         if cost != float('inf'):
             total += cost
-        print(f"Min cost is: {cost}")
-    #print(f"Part 2 total cost :{total}")
 
 
 if __name__ == "__main__":
