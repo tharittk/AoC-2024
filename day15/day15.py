@@ -1,7 +1,7 @@
 def read_input():
     grid = []
     movements = []
-    with open("./ssinput2.txt") as f:
+    with open("./sinput.txt") as f:
         while True:
             line = f.readline()
             if not line:
@@ -187,9 +187,16 @@ def move_box2(grid, bx, by, dx, dy):
             elif grid[by_next][bx_next] == '#' or grid[by_next][bx_next+1] =='#':
                 return False
             else:
-                left_side_is_box = (grid[by_next][bx_next] == '[' or grid[by_next][bx_next]== ']')
-                right_side_is_box =(grid[by_next][bx_next+1] == ']' or grid[by_next][bx_next+1] == '[')
-            
+                # []  [][]
+                # []   []
+                direct_is_box = grid[by_next][bx_next] == '['
+                left_side_is_box = grid[by_next][bx_next]== ']'
+                right_side_is_box = grid[by_next][bx_next+1] == '['
+                        
+                if direct_is_box:
+                    ok_central = move_box2(grid, bx_next, by_next, dx, dy)
+                else:
+                    ok_central = False
                 if left_side_is_box:
                     ok_left = move_box2(grid, bx_next, by_next, dx, dy)
                 else:
@@ -200,13 +207,28 @@ def move_box2(grid, bx, by, dx, dy):
                     ok_right = True
                 
                 # ok both
-                if ok_left and ok_right:
+                if ok_central or (ok_left and ok_right):
                     grid[by_next][bx_next] = '['
                     grid[by_next][bx_next+1] = ']'
                     grid[by][bx] = '.'
                     grid[by][bx+1] = '.'
                     return True
                 else:
+                    if ok_central:
+                        grid[by_next+dy][bx_next] = '.'
+                        grid[by_next+dy][bx_next+1] = '.'
+                        grid[by_next][bx_next] = '['
+                        grid[by_next][bx_next+1] = ']'
+                    if ok_left:
+                        grid[by_next+dy][bx_next] = '.'
+                        grid[by_next+dy][bx_next-1] = '.'
+                        grid[by_next][bx_next] = ']'
+                        grid[by_next][bx_next-1] = '['
+                    if ok_right:
+                        grid[by_next+dy][bx_next+1] = '.'
+                        grid[by_next+dy][bx_next+2] = '.'
+                        grid[by_next][bx_next+1] = '['
+                        grid[by_next][bx_next+2] = ']'
                     return False
         # push from right-side
         elif grid[by][bx] == ']':
@@ -221,9 +243,16 @@ def move_box2(grid, bx, by, dx, dy):
             elif grid[by_next][bx_next] == '#' or grid[by_next][bx_next-1] =='#':
                 return False
             else:
-                right_side_is_box = (grid[by_next][bx_next] == '[' or grid[by_next][bx_next]== ']')
-                left_side_is_box =(grid[by_next][bx_next-1] == ']' or grid[by_next][bx_next-1] == '[')
+                # []  [][]
+                # []   []
+                direct_is_box = grid[by_next][bx_next] == ']'
+                left_side_is_box = grid[by_next][bx_next-1]== ']'
+                right_side_is_box = grid[by_next][bx_next] == '['
             
+                if direct_is_box:
+                    ok_central = move_box2(grid, bx_next, by_next, dx, dy)
+                else:
+                    ok_central = False
                 if left_side_is_box:
                     ok_left = move_box2(grid, bx_next-1, by_next, dx, dy)
                 else:
@@ -234,13 +263,28 @@ def move_box2(grid, bx, by, dx, dy):
                     ok_right = True
                 
                 # ok both
-                if ok_left and ok_right:
+                if ok_central or (ok_left and ok_right):
                     grid[by_next][bx_next] = ']'
                     grid[by_next][bx_next-1] = '['
                     grid[by][bx] = '.'
                     grid[by][bx-1] = '.'
                     return True
                 else:
+                    if ok_central:
+                        grid[by_next+dy][bx_next] = '.'
+                        grid[by_next+dy][bx_next+1] = '.'
+                        grid[by_next][bx_next] = ']'
+                        grid[by_next][bx_next-1] = '['
+                    if ok_left:
+                        grid[by_next+dy][bx_next-2] = '.'
+                        grid[by_next+dy][bx_next-1] = '.'
+                        grid[by_next][bx_next-2] = '['
+                        grid[by_next][bx_next-1] = ']'
+                    if ok_right:
+                        grid[by_next+dy][bx_next] = '.'
+                        grid[by_next+dy][bx_next+1] = '.'
+                        grid[by_next][bx_next] = '['
+                        grid[by_next][bx_next+1] = ']'
                     return False
         else:
             print("Warning .. should not be here in push box up/down")
@@ -288,14 +332,15 @@ def move_box2(grid, bx, by, dx, dy):
 def solve_part2(grid2, movements, rx, ry):
     for movement in movements:
         rx, ry = move_robot2(grid2, rx, ry, movement)
-        print("Movement: ", movement)
-        print_grid(grid2)
-    #gps_score = 0
-    #for i in range(len(grid)):
-    #    for j in range(len(grid[0])):
-    #        if grid[i][j] == "O":
-    #            gps_score += (100 * i) + j
-    return 0
+        #print("Movement: ", movement)
+        #print_grid(grid2)
+    gps_score = 0
+    for i in range(len(grid2)):
+        for j in range(len(grid2[0])):
+            if grid2[i][j] == "[":
+                gps_score += (100 * i) + j
+    print(f"Part 2: gps score :: {gps_score}")
+    return gps_score
 
 
 if __name__ == "__main__":
@@ -305,5 +350,7 @@ if __name__ == "__main__":
     grid2 = double_grid(grid)
     print_grid(grid2)
     ry2, rx2 = get_robot_pos(grid2)
-    print(f"Part2 rx {rx2}, ry {ry2}" )
+    #print(f"Part2 rx {rx2}, ry {ry2}" )
     solve_part2(grid2, movements, rx2, ry2)
+    print_grid(grid2)
+
